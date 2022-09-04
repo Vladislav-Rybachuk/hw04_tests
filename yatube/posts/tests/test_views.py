@@ -1,10 +1,9 @@
 from django import forms
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
 
-from ..models import  Group, Post
+from ..models import Group, Post
 
 User = get_user_model()
 
@@ -67,13 +66,13 @@ class PostViewTest(TestCase):
             for reverse_name in reverse_names:
                 with self.subTest(reverse_name=reverse_name):
                     response = self.authorized_client.get(reverse_name)
-                    self.assertTemplateUsed(response, template)  
+                    self.assertTemplateUsed(response, template)
 
     def _post_for_tests(self, context, some_posts):
         self.assertEqual(context.text, some_posts.text)
         self.assertEqual(context.group, some_posts.group)
-        self.assertEqual(context.author, some_posts.author) 
-    
+        self.assertEqual(context.author, some_posts.author)
+
     def test_index(self):
         """Шаблон index сформирован с правильным контекстом."""
         response = self.authorized_client.get(reverse('posts:index'))
@@ -169,4 +168,3 @@ class PostViewTest(TestCase):
             with self.subTest(reverse_name=reverse_name):
                 response = self.authorized_client.get(reverse_name)
                 self.assertEqual(len(response.context['page_obj']), count)
-

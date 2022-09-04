@@ -7,7 +7,7 @@ User = get_user_model()
 
 
 class PostModelTest(TestCase):
-    
+
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -26,8 +26,8 @@ class PostModelTest(TestCase):
         """Проверяем, что у моделей корректно работает __str__."""
         group = PostModelTest.group
         expected_title = group.title
-        self.assertEqual(expected_title,str(group))
+        self.assertEqual(expected_title, str(group))
 
         post = PostModelTest.post
         expected_object_name = post.text[:15]
-        self.assertEqual(expected_object_name,str(post))
+        self.assertEqual(expected_object_name, str(post))
