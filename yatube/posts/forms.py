@@ -15,7 +15,6 @@ class PostForm(forms.ModelForm):
             'group': ('Принадлежность к группе'),
         }
 
-
     def validate_not_empty(self):
         data = self.cleaned_data['text']
         if data == '':
