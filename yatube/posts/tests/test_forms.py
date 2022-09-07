@@ -24,7 +24,6 @@ class PostFormTest(TestCase):
         cls.form = PostForm()
         cls.uploaded = SimpleUploadedFile(
             name='/posts/small.gif/',
-            content=small_gif,
             content_type='image/gif'
         )
 
@@ -77,7 +76,7 @@ class PostFormTest(TestCase):
             ).exists()
         )
         self.assertEqual(Post.objects, Post.objects.latest('pub_date'))
-        
+
     def test_post_edit(self):
         """Валидная форма корректно меняет запись в Post."""
         posts_count = Post.objects.count()

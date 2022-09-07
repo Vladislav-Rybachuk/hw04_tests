@@ -88,7 +88,7 @@ def post_edit(request, post_id):
         files=request.FILES or None,
         instance=selected_post
     )
-    
+
     if request.method == 'POST':
         if form.is_valid():
             post = form.save()
