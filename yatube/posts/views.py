@@ -85,8 +85,10 @@ def post_edit(request, post_id):
     selected_post = get_object_or_404(Post, pk=post_id)
     form = PostForm(
         request.POST or None,
+        files=request.FILES or None,
         instance=selected_post
     )
+    
     if request.method == 'POST':
         if form.is_valid():
             post = form.save()

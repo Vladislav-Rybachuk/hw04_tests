@@ -22,14 +22,6 @@ class PostFormTest(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.form = PostForm()
-        small_gif = (
-            b'\x47\x49\x46\x38\x39\x61\x02\x00'
-            b'\x01\x00\x80\x00\x00\x00\x00\x00'
-            b'\xFF\xFF\xFF\x21\xF9\x04\x00\x00'
-            b'\x00\x00\x00\x2C\x00\x00\x00\x00'
-            b'\x02\x00\x01\x00\x00\x02\x02\x0C'
-            b'\x0A\x00\x3B'
-        )
         cls.uploaded = SimpleUploadedFile(
             name='/posts/small.gif/',
             content=small_gif,
@@ -47,10 +39,6 @@ class PostFormTest(TestCase):
             author=cls.user,
             group=cls.group,
         )
-        cls.post_to_create = {
-            'text': 'Текст поста',
-            'group': cls.group.id,
-        }
         cls.post_after_edit = {
             'text': 'Текст поста после изменения',
             'group': cls.group.id,
@@ -60,6 +48,10 @@ class PostFormTest(TestCase):
     def tearDownClass(cls):
         super().tearDownClass()
         shutil.rmtree(TEMP_MEDIA_ROOT, ignore_errors=True)
+        cls.post_to_create = {
+            'text': 'Текст поста',
+            'group': cls.group.id,
+        }
 
     def setUp(self):
         self.authorized_client = Client()
@@ -84,7 +76,8 @@ class PostFormTest(TestCase):
                 author=self.user,
             ).exists()
         )
-
+        self.assertEqual(Post.objects, Post.objects.latest('pub_date'))
+        
     def test_post_edit(self):
         """Валидная форма корректно меняет запись в Post."""
         posts_count = Post.objects.count()

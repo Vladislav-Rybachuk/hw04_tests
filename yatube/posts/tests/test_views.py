@@ -168,3 +168,57 @@ class PostViewTest(TestCase):
             with self.subTest(reverse_name=reverse_name):
                 response = self.authorized_client.get(reverse_name)
                 self.assertEqual(len(response.context['page_obj']), count)
+
+
+class PaginatorViewsTest(TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.user = User.objects.create_user(username='auth')
+        cls.group = Group.objects.create(
+            title='Тестовая группа',
+            slug='test-slug',
+            description='Тестовое описание',
+        )
+        objs = [
+            Post(
+                text=f'Пост номер {i}',
+                author=cls.user,
+                group=cls.group
+            )
+            for i in range(1, 15)
+        ]
+        Post.objects.bulk_create(objs)
+
+    def setUp(self):
+        self.authorized_client = Client()
+        self.authorized_client.force_login(self.user)
+
+    def test_first_page_contains_ten_records(self):
+        template = {
+            reverse('posts:index'): 10,
+            reverse('posts:group_list',
+                    kwargs={'slug': self.group.slug}): 10,
+            reverse('posts:profile',
+                    kwargs={'username': self.user.username}): 10,
+        }
+        for reverse_name, count in template.items():
+            with self.subTest(reverse_name=reverse_name):
+                response = self.authorized_client.get(reverse_name)
+                self.assertEqual(len(response.context['page_obj']), count)
+
+    def test_second_page_contains_four_records(self):
+        template = {
+            reverse('posts:index'): 4,
+            reverse('posts:group_list',
+                    kwargs={'slug': self.group.slug}): 4,
+            reverse('posts:profile',
+                    kwargs={'username': self.user.username}): 4,
+        }
+        for reverse_name, count in template.items():
+            with self.subTest(reverse_name=reverse_name):
+                response = self.authorized_client.get(
+                    reverse_name + '?page=2'
+                )
+                self.assertEqual(len(response.context['page_obj']), count)
