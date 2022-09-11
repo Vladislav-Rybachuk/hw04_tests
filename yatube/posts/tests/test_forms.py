@@ -3,7 +3,6 @@ import tempfile
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
@@ -46,7 +45,7 @@ class PostFormTest(TestCase):
     def tearDownClass(cls):
         super().tearDownClass()
         shutil.rmtree(TEMP_MEDIA_ROOT, ignore_errors=True)
-        
+
     def setUp(self):
         self.authorized_client = Client()
         self.authorized_client.force_login(PostFormTest.user)
