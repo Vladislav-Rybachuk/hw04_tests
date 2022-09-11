@@ -22,17 +22,16 @@ class PostFormTest(TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.form = PostForm()
-        cls.uploaded = SimpleUploadedFile(
-            name='/posts/small.gif/',
-            content_type='image/gif'
-        )
-
         cls.user = User.objects.create_user(username='auth')
         cls.group = Group.objects.create(
             title='Тестовая группа',
             slug='test-slug',
             description='Тестовое описание',
         )
+        cls.post_to_create = {
+            'text': 'Текст поста',
+            'group': cls.group.id,
+        }
         cls.post = Post.objects.create(
             text='Текст поста 1',
             author=cls.user,
@@ -47,11 +46,7 @@ class PostFormTest(TestCase):
     def tearDownClass(cls):
         super().tearDownClass()
         shutil.rmtree(TEMP_MEDIA_ROOT, ignore_errors=True)
-        cls.post_to_create = {
-            'text': 'Текст поста',
-            'group': cls.group.id,
-        }
-
+        
     def setUp(self):
         self.authorized_client = Client()
         self.authorized_client.force_login(PostFormTest.user)
@@ -75,7 +70,13 @@ class PostFormTest(TestCase):
                 author=self.user,
             ).exists()
         )
-        self.assertEqual(Post.objects, Post.objects.latest('pub_date'))
+        self.assertEqual(
+            Post.objects.get(
+                text=self.post_to_create['text'],
+                group=self.post_to_create['group'],
+                author=self.user,
+            ), Post.objects.latest('pub_date')
+        )
 
     def test_post_edit(self):
         """Валидная форма корректно меняет запись в Post."""
